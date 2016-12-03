@@ -1,4 +1,6 @@
-package patterns.behavioral;
+package patterns.structural;
+
+import patterns.structural.Logger2;
 
 /**
  * Use decorator pattern to add functionality on top of an existing class,
