@@ -24,7 +24,7 @@ public class Logger6Solution implements Logger6 {
     }
 
     public static class WriteCommand {
-        public final UUID uuid;
+        private final UUID uuid;
         private final Path target;
         private final String content;
 
@@ -35,7 +35,7 @@ public class Logger6Solution implements Logger6 {
         }
 
         public void execute(Logger logger) {
-            logger.info(content);
+            logger.info("["+ uuid.toString() + "] " + content);
         }
 
         /**
@@ -50,6 +50,8 @@ public class Logger6Solution implements Logger6 {
             Files.write(target, filtered.getBytes());
         }
 
-
+        public UUID getUuid() {
+            return uuid;
+        }
     }
 }
