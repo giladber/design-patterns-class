@@ -1,4 +1,4 @@
-package patterns.behavioral;
+package patterns.structural;
 
 /**
  * Decorator
