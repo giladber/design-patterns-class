@@ -11,10 +11,10 @@ public interface Logger3 {
     /**
      * Write a message with the given severity level to the log's target file.
      * This method is guaranteed to be thread-safe on all implementations.
-     * @param level
+     * @param props
      * @param msg
      */
-    void log(Level level, String msg);
+    void log(LoggerProperties props, String msg);
 
     enum Level {
         TRACE,
@@ -31,11 +31,27 @@ public interface Logger3 {
         private final String format;
         private final String defaultFileLocation;
 
-        private LoggerProperties(URL url, Level level, String format, String defaultFileLocation) {
+        LoggerProperties(URL url, Level level, String format, String defaultFileLocation) {
             this.url = url;
             this.level = level;
             this.format = format;
             this.defaultFileLocation = defaultFileLocation;
+        }
+
+        public URL getUrl() {
+            return url;
+        }
+
+        public Level getLevel() {
+            return level;
+        }
+
+        public String getFormat() {
+            return format;
+        }
+
+        public String getDefaultFileLocation() {
+            return defaultFileLocation;
         }
     }
 
