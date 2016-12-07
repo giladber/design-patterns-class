@@ -1,30 +1,33 @@
 package patterns.fp
-import java.util.concurrent.TimeUnit
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import akka.pattern.ask
+import akka.util.Timeout
 import patterns.fp.Messages.{AddMessage, GetMessage, RemoveMessage}
 
-import scala.concurrent.duration.{Duration, FiniteDuration}
+import scala.concurrent.{Await, Future, duration}
+import scala.concurrent.duration.{Duration, DurationInt, FiniteDuration}
+
 /**
-  * Created by giladrber on 12/7/2016.
   */
 class TimedHashMap[K, V] extends TimedMap[K, V] {
   val system = ActorSystem("design-patterns")
   val actor: ActorRef = system.actorOf(Props[MapActor[K, V]]())
+  implicit val timeout: Timeout = 5 seconds
+
 
   override def put(key: K, value: V, duration: FiniteDuration): Unit = {
     actor ! AddMessage(key, value, duration)
   }
 
   override def get(key: K): Option[V] = {
-    (actor ? GetMessage(key))
-      .mapTo[Option[V]]
-      .result(Duration(5, TimeUnit.SECONDS))
+    val future: Future[Option[V]] = (actor ? GetMessage(key)).mapTo[Option[V]]
+    Await.result(future, Duration(5, duration.SECONDS))
   }
 }
 
 class MapActor[K, V] extends Actor {
+  import scala.concurrent.ExecutionContext.Implicits.global
   import scala.collection.mutable
   type ValueWithTimestamp = (V, Long)
 
@@ -44,7 +47,7 @@ class MapActor[K, V] extends Actor {
         .foreach(result => map.remove(key))
 
     case GetMessage(key: K) =>
-      sender() ! map.get(key)
+      sender() ! map.get(key).map(_._1)
   }
 }
 
